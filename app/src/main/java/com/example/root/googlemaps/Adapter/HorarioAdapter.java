@@ -1,6 +1,8 @@
 package com.example.root.googlemaps.Adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +15,9 @@ import android.widget.TextView;
 import com.example.root.googlemaps.Line;
 import com.example.root.googlemaps.R;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
 /**
@@ -38,6 +43,10 @@ public class HorarioAdapter extends BaseAdapter {
         TextView txtTitle = (TextView) view.findViewById(R.id.txt_hor_name);
         ImageView imgBackground = (ImageView) view.findViewById(R.id.iv_background);
         Typeface titleFont = Typeface.createFromAsset(context.getAssets(), "fonts/Montserrat_Bold.ttf");
+
+
+        final URL[] url = {null};
+        final Bitmap[] bmp = {null};
 
         imgBackground.setImageBitmap(line.getBackground().getBitmap());
         txtTitle.setText(line.getName());

@@ -11,7 +11,7 @@ import java.io.Serializable;
 public class Line implements Serializable {
     private int id;
     private String name;
-    private BitmapDrawable background;
+    private transient BitmapDrawable background;
     private double[] initialCoords;
     private Stop[] stops;
     private Bus[] buses;

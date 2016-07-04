@@ -56,8 +56,25 @@ public class MainActivity extends AppCompatActivity {
                 new Bus(39.094029, -9.257199),
         });
 
-        redLine = new Line("Linha Vermelha", Color.rgb(255, 26, 26), Color.rgb(51, 133, 255), new double[] {0, 0});
+        redLine = new Line("Linha Vermelha", Color.rgb(255, 26, 26), Color.rgb(255, 26, 26), new double[] {39.091776, -9.260034});
         redLine.setBackground((BitmapDrawable)getResources().getDrawable(R.drawable.img1));
+
+        redLine.setStops(new Stop[]{
+                new Stop(39.094089, -9.257458),
+                new Stop(39.093858, -9.254939),
+                new Stop(39.095492, -9.252359),
+                new Stop(39.097959, -9.253250),
+                new Stop(39.100777, -9.254339),
+                new Stop(39.100640, -9.259580),
+                new Stop(39.105187, -9.259015),
+                new Stop(39.106619, -9.261697),
+                new Stop(39.106810, -9.265613),
+                new Stop(39.104857, -9.265700),
+        });
+        redLine.setBuses(new Bus[] {
+                new Bus(39.098789, -9.260383),
+                new Bus(39.094029, -9.257199),
+        });
 
         yellowLine= new Line("Linha Amarela", Color.rgb(255, 204, 0), Color.rgb(51, 133, 255), new double[] {0, 0});
         yellowLine.setBackground((BitmapDrawable)getResources().getDrawable(R.drawable.img1));
@@ -72,17 +89,20 @@ public class MainActivity extends AppCompatActivity {
         gvMain.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                if(i == 0) {
-                    openMaps(null);
-                }
+                openMaps(i);
             }
         });
     }
 
-    public void openMaps(View view) {
+    public void openMaps(int i) {
+
         Intent intent = new Intent(MainActivity.this, MapsActivity.class);
         Bundle bundle = new Bundle();
-        bundle.putSerializable("currentLine", blueLine);
+
+        if(i == 0)
+            bundle.putSerializable("currentLine", blueLine);
+        else if(i == 1)
+            bundle.putSerializable("currentLine", redLine);
         intent.putExtras(bundle);
 
         startActivity(intent);

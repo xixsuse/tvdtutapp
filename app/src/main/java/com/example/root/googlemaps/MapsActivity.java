@@ -1,8 +1,10 @@
 package com.example.root.googlemaps;
 
+
 import android.graphics.Color;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.view.View;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -10,7 +12,9 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
@@ -18,7 +22,7 @@ import org.w3c.dom.Document;
 
 import java.util.ArrayList;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private GoogleMap mMap;
     private Line currentLine;
@@ -50,7 +54,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .build();
 
         mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialLatLang, 16));
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
         int i = 0;
         final int red = Color.red(currentLine.getLightColor());
@@ -58,11 +62,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         final int blue = Color.blue(currentLine.getLightColor());
         final int color = Color.argb(150, red, green, blue);
 
+
+
         for(Stop stop : currentLine.getStops()) {
-            mMap.addMarker(new MarkerOptions()
+            Marker marker = mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(stop.getX(), stop.getY()))
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.busstop_blue))
+                    .title("Paragem #" + i)
             );
+            mMap.setOnMarkerClickListener(this);
             if(i < currentLine.getStops().length-1) {
                 final int finalI = i;
                 new Thread(
@@ -90,11 +98,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         for(Bus bus : currentLine.getBuses()) {
-            mMap.addMarker(new MarkerOptions()
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.blue_dot_30x30))
-                .flat(true)
-                .position(new LatLng(bus.getX(), bus.getY()))
-            );
+            CircleOptions circleOptions = new CircleOptions()
+                    .center(new LatLng(bus.getX(), bus.getY()))
+                    .radius(10).fillColor(currentLine.getLightColor()).strokeColor(Color.WHITE).strokeWidth(1);
+            mMap.addCircle(circleOptions);
         }
     }
 
@@ -108,4 +115,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        marker.showInfoWindow();
+        return false;
+    }
 }
