@@ -1,9 +1,11 @@
 package com.example.root.googlemaps;
 
+import java.io.Serializable;
+
 /**
  * Created by root on 03-07-2016.
  */
-public class Stop {
+public class Stop implements Serializable {
 
     private int id;
     private double x;

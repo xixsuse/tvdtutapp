@@ -42,6 +42,7 @@ public class HorarioAdapter extends BaseAdapter {
         imgBackground.setImageBitmap(line.getBackground().getBitmap());
         txtTitle.setText(line.getName());
         txtTitle.setTypeface(titleFont);
+        txtTitle.setTextColor(line.getNormalColor());
         return view;
     }
 

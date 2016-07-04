@@ -1,9 +1,11 @@
 package com.example.root.googlemaps;
 
+import java.io.Serializable;
+
 /**
  * Created by root on 03-07-2016.
  */
-public class Bus {
+public class Bus implements Serializable {
     private String name;
     private double x;
     private double y;
