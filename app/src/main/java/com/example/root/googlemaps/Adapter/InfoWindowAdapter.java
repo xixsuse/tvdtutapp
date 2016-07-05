@@ -35,9 +35,12 @@ public class InfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View v = inflater.inflate(R.layout.single_infowindow, null);
 
-        Stop stop = stops.get(marker.getId());
-        TextView txtStreet = (TextView) v.findViewById(R.id.txt_street_name);
-        txtStreet.setText("Rua Teresa Jesus #" + stop.getX());
-        return v;
+        if(stops.containsKey(marker.getId())) {
+            Stop stop = stops.get(marker.getId());
+            TextView txtStreet = (TextView) v.findViewById(R.id.txt_street_name);
+            txtStreet.setText("Rua Teresa Jesus #" + stop.getX());
+            return v;
+        }
+        return null;
     }
 }

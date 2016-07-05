@@ -19,6 +19,8 @@ public class BottomBarFragment extends Fragment implements View.OnClickListener 
     ImageButton btLessZoom;
     ImageButton btFindLoc;
 
+    MapsActivity currentActivity;
+
     public BottomBarFragment() {
     }
 
@@ -32,19 +34,21 @@ public class BottomBarFragment extends Fragment implements View.OnClickListener 
         btLessZoom.setOnClickListener(this);
         btFindLoc = (ImageButton) v.findViewById(R.id.bt_find_loc);
         btFindLoc.setOnClickListener(this);
+
+        currentActivity = ((MapsActivity)getActivity());
         return v;
     }
 
     @Override
     public void onClick(View view) {
         if(view.getId() == btAddZoom.getId()) {
-            ((MapsActivity)getActivity()).addZoom(0.2f);
+            currentActivity.addZoom(0.2f);
         }
         else if(view.getId() == btLessZoom.getId()) {
-            ((MapsActivity)getActivity()).addZoom(-0.2f);
+            currentActivity.addZoom(-0.2f);
         }
         else if(view.getId() == btFindLoc.getId()) {
-            ((MapsActivity)getActivity()).showCurrentLocation(true);
+            currentActivity.showCurrentLocation(!currentActivity.isShowingLocation());
         }
     }
 }

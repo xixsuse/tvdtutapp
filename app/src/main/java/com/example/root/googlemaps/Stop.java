@@ -17,6 +17,12 @@ public class Stop implements Serializable {
         this.y = y;
     }
 
+    public Stop(double x, double y, String name) {
+        this.x = x;
+        this.y = y;
+        this.streetName = name;
+    }
+
     public int getId() {
         return id;
     }
