@@ -10,6 +10,7 @@ public class Stop implements Serializable {
     private int id;
     private double x;
     private double y;
+    private String streetName;
 
     public Stop(double x, double y) {
         this.x = x;
@@ -38,5 +39,13 @@ public class Stop implements Serializable {
 
     public void setY(double y) {
         this.y = y;
+    }
+
+    public String getStreetName() {
+        return streetName;
+    }
+
+    public void setStreetName(String streetName) {
+        this.streetName = streetName;
     }
 }

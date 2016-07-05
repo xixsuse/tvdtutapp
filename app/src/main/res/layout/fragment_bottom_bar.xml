@@ -1,0 +1,48 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Fragment.BottomBarFragment">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#343131">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageButton
+                android:id="@+id/bt_less_zoom"
+                android:layout_width="47dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:layout_gravity="right|center_vertical"
+                android:background="#4c4949"
+                android:src="@drawable/ic_zoom_out" />
+
+            <ImageButton
+                android:id="@+id/bt_find_loc"
+                android:layout_width="47dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:layout_gravity="left|center_vertical"
+                android:background="#4c4949"
+                android:src="@android:drawable/ic_menu_mylocation" />
+
+            <ImageButton
+                android:id="@+id/bt_add_zoom"
+                android:layout_width="47dp"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:layout_gravity="right|center_vertical"
+                android:layout_marginRight="2dp"
+                android:layout_toLeftOf="@+id/bt_less_zoom"
+                android:layout_toStartOf="@+id/bt_less_zoom"
+                android:background="#4c4949"
+                android:src="@android:drawable/ic_menu_zoom" />
+        </RelativeLayout>
+    </FrameLayout>
+</RelativeLayout>
