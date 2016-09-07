@@ -43,6 +43,18 @@
                 android:layout_toStartOf="@+id/bt_less_zoom"
                 android:background="#4c4949"
                 android:src="@android:drawable/ic_menu_zoom" />
+
+            <ImageButton
+                android:id="@+id/bt_refresh_map"
+                android:layout_width="47dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="left|center_vertical"
+                android:background="#4c4949"
+                android:src="@drawable/ic_refresh"
+                android:layout_alignParentTop="true"
+                android:layout_toRightOf="@+id/bt_find_loc"
+                android:layout_toEndOf="@+id/bt_find_loc"
+                android:layout_marginLeft="2dp" />
         </RelativeLayout>
     </FrameLayout>
 </RelativeLayout>

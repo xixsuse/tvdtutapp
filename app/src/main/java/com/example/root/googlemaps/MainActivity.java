@@ -1,152 +1,212 @@
 package com.example.root.googlemaps;
 
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.res.Configuration;
-import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.BitmapFactory;
+import android.location.Location;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.ShareCompat;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.GridView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
-import com.example.root.googlemaps.Adapter.HorarioAdapter;
+import com.astuetz.PagerSlidingTabStrip;
+import com.example.root.googlemaps.Adapter.DrawerAdapter;
+import com.example.root.googlemaps.Adapter.HomePagerAdapter;
+import com.example.root.googlemaps.Fragment.MapFragment;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity  implements
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener,
+        LocationListener {
 
-
-    Line blueLine;
-    Line redLine;
-    Line yellowLine;
-    Line greenLine;
+    private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
+    private GoogleApiClient mGoogleApiClient;
+    private LocationRequest mLocationRequest;
+    private double currentLatitude;
+    private double currentLongitude;
 
     ArrayList<Line> lines;
-    HorarioAdapter adapter;
-    GridView gvMain;
 
     Toolbar toolbar;
     ListView drawerList;
     ActionBarDrawerToggle drawerToggle;
     DrawerLayout drawerLayout;
-    ArrayAdapter<String> drawerAdapter;
-
+    DrawerAdapter drawerAdapter;
+    ViewPager pager;
     ShareActionProvider shareActionProvider;
+    HomePagerAdapter homePagerAdapter;
+    ProgressBar pbLoad;
+
+    FirebaseDatabase db;
+    DatabaseReference linesref;
+    public static FragmentManager fragmentManager;
+    PagerSlidingTabStrip tabs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         overridePendingTransition(R.transition.fadein, R.transition.fadeout);
+        fragmentManager = getSupportFragmentManager();
 
-
+        db = FirebaseDatabase.getInstance();
+        linesref = db.getReference("linhas");
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         drawerList = (ListView)findViewById(R.id.navList);
         drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
+        pbLoad = (ProgressBar) findViewById(R.id.pb_load);
+
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
 
-        gvMain = (GridView) findViewById(R.id.gv_main);
-        blueLine = new Line("Linha Azul", Color.rgb(51, 153, 255), Color.rgb(51, 133, 255), new double[] {39.091776, -9.260034});
-        blueLine.setBackground((BitmapDrawable)getResources().getDrawable(R.drawable.img1));
-        blueLine.setStops(new Stop[]{
-                new Stop(39.091868, -9.263187),
-                new Stop(39.089815, -9.261857),
-                new Stop(39.089553, -9.261264),
-                new Stop(39.087039, -9.258473),
-                new Stop(39.087556, -9.255834),
-                new Stop(39.090520, -9.253602),
-                new Stop(39.092627, -9.254713),
-                new Stop(39.094122, -9.257416),
-                new Stop(39.093897, -9.255179),
-                new Stop(39.095566, -9.252492),
-                new Stop(39.098010, -9.253243),
-                new Stop(39.100748, -9.254352),
-                new Stop(39.100732, -9.259581),
-                new Stop(39.105377, -9.259130),
-                new Stop(39.106659, -9.261619),
-                new Stop(39.106731, -9.265592),
-                new Stop(39.104859, -9.265601),
-                new Stop(39.104334, -9.263415),
+        mLocationRequest = LocationRequest.create()
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                .setInterval(10 * 1000)        // 10 seconds, in milliseconds
+                .setFastestInterval(1 * 1000); // 1 second, in milliseconds
 
-        });
-        blueLine.setBuses(new Bus[] {
-                new Bus(39.098789, -9.260383),
-                new Bus(39.094029, -9.257199),
-        });
-
-        redLine = new Line("Linha Vermelha", Color.rgb(255, 26, 26), Color.rgb(255, 26, 26), new double[] {39.091776, -9.260034});
-        redLine.setBackground((BitmapDrawable)getResources().getDrawable(R.drawable.img1));
-
-        redLine.setStops(new Stop[]{
-                new Stop(39.094089, -9.257458),
-                new Stop(39.093858, -9.254939),
-                new Stop(39.095492, -9.252359),
-                new Stop(39.097959, -9.253250),
-                new Stop(39.100777, -9.254339),
-                new Stop(39.100640, -9.259580),
-                new Stop(39.105187, -9.259015),
-                new Stop(39.106619, -9.261697),
-                new Stop(39.106810, -9.265613),
-                new Stop(39.104857, -9.265700),
-        });
-        redLine.setBuses(new Bus[] {
-                new Bus(39.098789, -9.260383),
-                new Bus(39.094029, -9.257199),
-        });
-
-        yellowLine= new Line("Linha Amarela", Color.rgb(255, 204, 0), Color.rgb(51, 133, 255), new double[] {0, 0});
-        yellowLine.setBackground((BitmapDrawable)getResources().getDrawable(R.drawable.img1));
-
-        greenLine= new Line("Linha Verde", Color.rgb(0, 179, 0), Color.rgb(0, 204, 0), new double[] {0, 0});
-        greenLine.setBackground((BitmapDrawable)getResources().getDrawable(R.drawable.img1));
-
-        lines = new ArrayList<>();
-        lines.add(blueLine);
-        lines.add(redLine);
-        lines.add(yellowLine);
-        lines.add(greenLine);
-        adapter = new HorarioAdapter(this, lines);
-        gvMain.setAdapter(adapter);
-
-        gvMain.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        linesref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                openMaps(i);
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot snap : dataSnapshot.getChildren()) {
+                    Line line = new Line(snap.getKey(),
+                            snap.child("colorNormal").getValue(Integer.class),
+                            snap.child("colorLight").getValue(Integer.class),
+                            new double[] {39.091776, -9.260034});
+
+                    ArrayList<Bus> busses = new ArrayList<>();
+                    for(DataSnapshot bussnap : snap.child("autocarros").getChildren()) {
+                        Bus bus = new Bus(bussnap.child("lat").getValue(Double.class),
+                                bussnap.child("long").getValue(Double.class));
+                        bus.setId(bussnap.getKey());
+                        busses.add(bus);
+                    }
+                    for(DataSnapshot stopsnap : snap.child("paragens").getChildren()) {
+                        Stop stop = new Stop(
+                                stopsnap.child("lat").getValue(Double.class),
+                                stopsnap.child("long").getValue(Double.class));
+
+                        if(stopsnap.hasChild("img")) {
+                            byte[] img = Base64.decode(stopsnap.child("img").getValue(String.class), Base64.DEFAULT);
+                            stop.setImage(BitmapFactory.decodeByteArray(img, 0, img.length));
+                        }
+
+                        if(stopsnap.hasChild("name")) {
+                            stop.setStreetName(stopsnap.child("name").getValue(String.class));
+                        }
+                        line.addStop(stop);
+                    }
+                    line.setBuses(busses);
+                    lines.add(line);
+                }
+                startTabsAndFragments();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
             }
         });
+        lines = new ArrayList<>();
+        tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+        tabs.setIndicatorHeight(7);
+        tabs.setTextColorResource(R.color.light_font);
+        tabs.setDividerColorResource(R.color.colorLightGray);
+        tabs.setIndicatorColorResource(R.color.colorLightGray);
+        tabs.setBackgroundResource(R.color.colorPrimary);
+        tabs.setFitsSystemWindows(true);
+
+        tabs.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+            @Override
+            public void onPageSelected(int position) {
+                Line line = lines.get(position);
+                tabs.setIndicatorColor(line.getNormalColor());
+                MapFragment fragment = (MapFragment) homePagerAdapter.instantiateItem(pager, position);
+                if (fragment != null) {
+                    fragment.loadMap();
+                }
+            }
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+
         addDrawerItems();
     }
 
-    public void openMaps(int i) {
+    private void startTabsAndFragments() {
+        homePagerAdapter = new HomePagerAdapter(getSupportFragmentManager(), lines);
+        pager = (ViewPager) findViewById(R.id.pager);
+        pager.setAdapter(homePagerAdapter);
+        tabs.setViewPager(pager);
+        tabs.setIndicatorColor(lines.get(0).getNormalColor());
+    }
 
-        Intent intent = new Intent(MainActivity.this, MapsActivity.class);
-        Bundle bundle = new Bundle();
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mGoogleApiClient.connect();
+    }
 
-        if(i == 0)
-            bundle.putSerializable("currentLine", blueLine);
-        else if(i == 1)
-            bundle.putSerializable("currentLine", redLine);
-        intent.putExtras(bundle);
+    @Override
+    protected void onPause() {
+        super.onPause();
 
-        startActivity(intent);
+        if (mGoogleApiClient.isConnected()) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+            mGoogleApiClient.disconnect();
+        }
     }
 
     private void addDrawerItems() {
-        String[] osArray = {"Android", "iOS", "Windows", "OS X", "Linux"};
-        drawerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, osArray);
+        LinkedHashMap<String, Integer> map = new LinkedHashMap<>();
+        map.put("Início", R.drawable.ic_home);
+        map.put("Sobre", R.drawable.ic_about);
+
+        drawerAdapter = new DrawerAdapter(MainActivity.this, map);
         drawerList.setAdapter(drawerAdapter);
 
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
@@ -163,6 +223,29 @@ public class MainActivity extends AppCompatActivity {
         };
         drawerToggle.setDrawerIndicatorEnabled(true);
         drawerLayout.setDrawerListener(drawerToggle);
+    }
+
+    public void addZoom(float zoom)  {
+        Fragment page = getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.pager + ":" + pager.getCurrentItem());
+        if (page != null) {
+            ((MapFragment)page).addZoom(zoom);
+        }
+    }
+
+    public void refreshMap() {
+        Fragment page = getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.pager + ":" + pager.getCurrentItem());
+        if (page != null) {
+            ((MapFragment)page).refreshMap();
+        }
+    }
+
+    public void toggleLocation() {
+        Fragment page = getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.pager + ":" + pager.getCurrentItem());
+        if (page != null) {
+            if(!mGoogleApiClient.isConnected())
+                mGoogleApiClient.connect();
+            ((MapFragment)page).toggleLocation(new LatLng(currentLatitude, currentLongitude));
+        }
     }
 
     @Override
@@ -188,8 +271,60 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_activity_menu, menu);
+
+        MenuItem item = menu.findItem(R.id.action_share_social);
+        shareActionProvider = (ShareActionProvider)MenuItemCompat.getActionProvider(item);
+        MenuItemCompat.setActionProvider(item, shareActionProvider);
+        
+        String shareText = "https://www.google.pt";
+        Intent shareIntent = ShareCompat.IntentBuilder.from(this).setType("text/plain").setText(shareText).getIntent();
+        shareActionProvider.setShareIntent(shareIntent);
         return true;
     }
 
+    @Override
+    public void onConnected(Bundle bundle) {
+        Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+
+        if (location == null) {
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+
+        } else {
+            //If everything went fine lets get latitude and longitude
+            currentLatitude = location.getLatitude();
+            currentLongitude = location.getLongitude();
+
+            //Toast.makeText(this, currentLatitude + " WORKS " + currentLongitude + "", Toast.LENGTH_LONG).show();
+        }
+    }
+
+
+    @Override
+    public void onConnectionSuspended(int i) {}
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        if (connectionResult.hasResolution()) {
+            try {
+                connectionResult.startResolutionForResult(this, CONNECTION_FAILURE_RESOLUTION_REQUEST);
+            } catch (IntentSender.SendIntentException e) {
+                e.printStackTrace();
+            }
+        } else {
+            Log.e("Error", "Location services connection failed with code " + connectionResult.getErrorCode());
+        }
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        currentLatitude = location.getLatitude();
+        currentLongitude = location.getLongitude();
+
+        Toast.makeText(this, currentLatitude + " WORKS " + currentLongitude + "", Toast.LENGTH_LONG).show();
+    }
+
+    public void toggleLoad(boolean b) {
+        pbLoad.setVisibility((b == true) ? View.VISIBLE : View.INVISIBLE);
+    }
 
 }

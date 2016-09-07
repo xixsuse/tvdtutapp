@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "278487869281",
+    "firebase_url": "https://apptuts-c9743.firebaseio.com",
+    "project_id": "apptuts-c9743",
+    "storage_bucket": "apptuts-c9743.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:278487869281:android:92edb140f4db2852",
+        "android_client_info": {
+          "package_name": "com.example.root.googlemaps"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "278487869281-hfm2gd87mb27f4c9a0na0vfn0ghecf1h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDE010nhweaE3h605IpUw6esMwh0jDBm2I"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

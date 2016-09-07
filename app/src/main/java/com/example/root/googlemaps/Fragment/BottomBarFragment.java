@@ -1,15 +1,14 @@
 package com.example.root.googlemaps.Fragment;
 
 
-import android.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 
-import com.example.root.googlemaps.MapsActivity;
+import com.example.root.googlemaps.MainActivity;
 import com.example.root.googlemaps.R;
 
 public class BottomBarFragment extends Fragment implements View.OnClickListener {
@@ -18,11 +17,10 @@ public class BottomBarFragment extends Fragment implements View.OnClickListener 
     ImageButton btAddZoom;
     ImageButton btLessZoom;
     ImageButton btFindLoc;
+    ImageButton btRefresh;
 
-    MapsActivity currentActivity;
-
-    public BottomBarFragment() {
-    }
+    MainActivity activity;
+    public BottomBarFragment() {}
 
 
     @Override
@@ -35,20 +33,26 @@ public class BottomBarFragment extends Fragment implements View.OnClickListener 
         btFindLoc = (ImageButton) v.findViewById(R.id.bt_find_loc);
         btFindLoc.setOnClickListener(this);
 
-        currentActivity = ((MapsActivity)getActivity());
+        btRefresh = (ImageButton) v.findViewById(R.id.bt_refresh_map);
+        btRefresh.setOnClickListener(this);
+
+        activity = (MainActivity)getActivity();
         return v;
     }
 
     @Override
     public void onClick(View view) {
         if(view.getId() == btAddZoom.getId()) {
-            currentActivity.addZoom(0.2f);
+            activity.addZoom(0.2f);
         }
         else if(view.getId() == btLessZoom.getId()) {
-            currentActivity.addZoom(-0.2f);
+            activity.addZoom(-0.2f);
         }
         else if(view.getId() == btFindLoc.getId()) {
-            currentActivity.showCurrentLocation(!currentActivity.isShowingLocation());
+            activity.toggleLocation();
+        }
+        else if(view.getId() == btRefresh.getId()) {
+            activity.refreshMap();
         }
     }
 }

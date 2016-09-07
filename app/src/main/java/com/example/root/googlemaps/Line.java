@@ -1,9 +1,9 @@
 package com.example.root.googlemaps;
 
-import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Created by root on 03-07-2016.
@@ -13,8 +13,8 @@ public class Line implements Serializable {
     private String name;
     private transient BitmapDrawable background;
     private double[] initialCoords;
-    private Stop[] stops;
-    private Bus[] buses;
+    private ArrayList<Stop> stops;
+    private ArrayList<Bus> busses;
     private int colorNormal;
     private int colorLight;
 
@@ -25,6 +25,7 @@ public class Line implements Serializable {
         this.initialCoords = initialCoords;
         this.colorNormal = colorNormal;
         this.colorLight = colorLight;
+        stops = new ArrayList<>();
     }
 
     public int getId() {
@@ -51,20 +52,20 @@ public class Line implements Serializable {
         this.initialCoords = initialCoords;
     }
 
-    public Stop[] getStops() {
+    public ArrayList<Stop> getStops() {
         return stops;
     }
 
-    public void setStops(Stop[] stops) {
+    public void setStops(ArrayList<Stop> stops) {
         this.stops = stops;
     }
 
-    public void setBuses(Bus[] buses) {
-        this.buses = buses;
+    public void setBuses(ArrayList<Bus> buses) {
+        this.busses = buses;
     }
 
-    public Bus[] getBuses() {
-        return buses;
+    public ArrayList<Bus> getBuses() {
+        return busses;
     }
 
     public BitmapDrawable getBackground() {
@@ -89,5 +90,19 @@ public class Line implements Serializable {
 
     public void setLightColor(int color) {
         this.colorLight = color;
+    }
+
+    public void addStop(Stop stop) {
+        if(stop != null) {
+            stops.add(stop);
+        }
+    }
+
+    public void addBus(Bus bus) {
+        busses.add(bus);
+    }
+
+    public void removeBus(Bus bus) {
+        busses.remove(bus);
     }
 }

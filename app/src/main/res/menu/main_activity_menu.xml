@@ -8,11 +8,10 @@
         android:title="Definições"
         app:showAsAction="never" />
     <item
-        android:id="@+id/action_search"
-        android:orderInCategory="200"
+        android:id="@+id/action_share_social"
+            android:orderInCategory="200"
         android:title="Search"
-        android:icon="@drawable/ic_share_social"
-        app:showAsAction="ifRoom"
-        ></item>
+        app:actionProviderClass="android.support.v7.widget.ShareActionProvider"
+        app:showAsAction="ifRoom"></item>
 
 </menu>
